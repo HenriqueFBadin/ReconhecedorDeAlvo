@@ -3,15 +3,18 @@ import datetime
 
 
 def format_date(date_str):
-    if type(date_str) == datetime.datetime:
-        return date_str.strftime("%d/%m/%Y")
-
-    if len(date_str) == 8 and date_str.isdigit():
-        return datetime.datetime.strptime(date_str, "%Y%m%d").strftime("%d/%m/%Y")
-
-    return datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S").strftime(
-        "%d/%m/%Y"
-    )
+    if not date_str:
+        return "não informado"
+    try:
+        if type(date_str) == datetime.datetime:
+            return date_str.strftime("%d/%m/%Y")
+        if len(date_str) == 8 and date_str.isdigit():
+            return datetime.datetime.strptime(date_str, "%Y%m%d").strftime("%d/%m/%Y")
+        return datetime.datetime.strptime(date_str[:19], "%Y-%m-%d %H:%M:%S").strftime(
+            "%d/%m/%Y"
+        )
+    except Exception:
+        return "não informado"
 
 
 def verifica_lista(valor):
@@ -21,76 +24,145 @@ def verifica_lista(valor):
 
 
 def preparar_whois(info):
-
     dados = {}
 
-    dados["dominio"] = info["domain_name"]
-    dados["titular"] = info["registrant_name"]
-    dados["documento"] = info["registrant_id"]
+    dados["dominio"] = verifica_lista(info.get("domain_name", "não informado"))
+    dados["titular"] = info.get("registrant_name", "não informado")
+    dados["documento"] = info.get("registrant_id", "não informado")
 
-    if type(info["person"]) == list:
-        dados["responsavel"] = ", ".join([nome.title() for nome in info["person"]])
+    # Responsável
+    responsavel = info.get("person", "não informado")
+    if type(responsavel) == list and responsavel:
+        dados["responsavel"] = ", ".join([r.title() for r in responsavel])
     else:
-        dados["responsavel"] = info["person"]
+        dados["responsavel"] = responsavel if responsavel else "não informado"
 
-    dados["pais"] = info["country"]
-    dados["c_titular"] = info["owner_c"]
-    dados["c_tecnico"] = info["tech_c"]
-    dados["servidores_dns"] = info["name_server"]
-    dados["dns_status"] = format_date(verifica_lista(info["nsstat"].split()[0])) + " AA"
-    dados["dns_ultimo_aa"] = (
-        format_date(info["nslastaa"]) if "nslastaa" in info and info["nslastaa"] else ""
+    # País, contatos
+    dados["pais"] = info.get("country", "não informado")
+    dados["c_titular"] = info.get("owner_c", "não informado")
+    dados["c_tecnico"] = info.get("tech_c", "não informado")
+    dados["org"] = info.get("org", "não informado")
+
+    # DNS
+    dns_servers = info.get("name_server") or info.get("name_servers")
+    if type(dns_servers) == list and dns_servers:
+        dados["servidores_dns"] = dns_servers
+    elif type(dns_servers) == str:
+        dados["servidores_dns"] = [dns_servers]
+    else:
+        dados["servidores_dns"] = ["não informado"]
+
+    # Datas
+    criacoes = info.get("creation_date", [])
+    alteracoes = info.get("updated_date", [])
+    expiracoes = info.get("expiration_date", "")
+
+    if type(criacoes) == list and criacoes:
+        dados["criado"] = format_date(criacoes[0])
+    elif criacoes:
+        dados["criado"] = format_date(criacoes)
+    else:
+        dados["criado"] = "não informado"
+
+    if type(alteracoes) == list and alteracoes:
+        dados["alterado"] = format_date(alteracoes[0])
+    elif alteracoes:
+        dados["alterado"] = format_date(alteracoes)
+    else:
+        dados["alterado"] = "não informado"
+
+    if type(expiracoes) == list and expiracoes:
+        dados["expiracao"] = format_date(expiracoes[0])
+    elif expiracoes:
+        dados["expiracao"] = format_date(expiracoes)
+    else:
+        dados["expiracao"] = "não informado"
+
+    # DNS Status
+    nsstat = info.get("nsstat", "")
+    dados["dns_status"] = (
+        format_date(nsstat.split()[0]) + " AA" if nsstat else "não informado"
     )
-    dados["saci"] = info["saci"]
-    dados["criado"] = format_date(min(info["creation_date"]))
-    dados["alterado"] = format_date(verifica_lista(info["updated_date"]))
-    dados["expiracao"] = format_date(info["expiration_date"])
-    dados["status"] = verifica_lista(info["status"])
+    dados["dns_ultimo_aa"] = format_date(info.get("nslastaa", ""))
 
+    # SACI e status
+    dados["saci"] = info.get("saci", "não informado")
+
+    status = info.get("status", [])
+    if type(status) == list and status:
+        dados["status"] = status[-1]
+    else:
+        dados["status"] = status if status else "não informado"
+
+    # Emails
+    email = info.get("email") or info.get("emails")
+    if type(email) == list and email:
+        dados["emails"] = ", ".join(email)
+    elif type(email) == str and email:
+        dados["emails"] = email
+    else:
+        dados["emails"] = "não informado"
+
+    # Contatos
     dados["contatos"] = []
 
-    if type(info["nic_hdl_br"]) == list and len(info["nic_hdl_br"]) > 1:
-        total = len(info["nic_hdl_br"])
-        for i in range(total):
+    nics = info.get("nic_hdl_br", [])
+    pessoas = info.get("person", [])
+    if type(nics) == list and len(nics) > 1:
+        for i in range(len(nics)):
             dados["contatos"].append(
                 {
-                    "id": info["nic_hdl_br"][i],
+                    "id": nics[i],
                     "nome": (
-                        info["person"][i].title()
-                        if type(info["person"]) == list and len(info["person"]) > i
-                        else info["person"].title()
+                        pessoas[i].title()
+                        if type(pessoas) == list and len(pessoas) > i
+                        else "não informado"
                     ),
-                    "email": info["email"],
+                    "email": (
+                        emails[i]
+                        if type(emails) == list and len(emails) > i
+                        else dados["emails"]
+                    ),
                     "criado": (
-                        format_date(info["creation_date"][i + 1])
-                        if len(info["creation_date"]) > i + 1
-                        else ""
+                        format_date(criacoes[i + 1])
+                        if type(criacoes) == list and len(criacoes) > i + 1
+                        else "não informado"
                     ),
                     "alterado": (
-                        format_date(info["updated_date"][i + 1])
-                        if len(info["updated_date"]) > i + 1
-                        else ""
+                        format_date(alteracoes[i + 1])
+                        if type(alteracoes) == list and len(alteracoes) > i + 1
+                        else "não informado"
                     ),
                 }
             )
-
     else:
-
         dados["contatos"].append(
             {
-                "id": info["nic_hdl_br"],
-                "nome": info["person"],
-                "email": info["email"],
-                "criado": format_date(info["creation_date"][-1]),
-                "alterado": format_date(info["updated_date"][-1]),
+                "id": nics if nics else "não informado",
+                "nome": (
+                    pessoas.title()
+                    if type(pessoas) == str
+                    else (
+                        pessoas[0].title()
+                        if type(pessoas) == list and pessoas
+                        else "não informado"
+                    )
+                ),
+                "email": dados["emails"],
+                "criado": format_date(criacoes[-1]) if criacoes else "não informado",
+                "alterado": (
+                    format_date(alteracoes[-1]) if alteracoes else "não informado"
+                ),
             }
         )
+
     return dados
 
 
 def whois_lookup():
     domain = input("Informe qual o domínio que deseja analisar: ")
     whois_info = whois.whois(domain)
+    print(whois_info)
     dados = preparar_whois(whois_info)
 
     print(f"domínio:       {dados['dominio']}")

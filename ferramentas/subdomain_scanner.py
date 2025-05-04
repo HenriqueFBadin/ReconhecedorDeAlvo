@@ -43,6 +43,7 @@ def subdom_scanner():
 
     subdomain_store = []
     total = len(subdomains_list)
+    progresso_mostrado = {10: False, 25: False, 50: False, 75: False, 99: False}
 
     for i, subdom in enumerate(subdomains_list, start=1):
         try:
@@ -60,24 +61,19 @@ def subdom_scanner():
         ):
             progresso = float((i / total) * 100)
 
-            if (
-                progresso == 10.00
-                or progresso == 25.00
-                or progresso == 50.00
-                or progresso == 75.00
-                or progresso == 99.00
-            ):
-                print(f"\n==============Progresso: {progresso}%==============")
+            for ponto in [10, 25, 50, 75, 99]:
+                if progresso >= ponto and not progresso_mostrado[ponto]:
+                    print(f"\n==============Progresso: {ponto}%==============")
+                    progresso_mostrado[ponto] = True
+                    break
 
             continue
         except KeyboardInterrupt:
             quit()
 
         progresso = float((i / total) * 100)
-        if (
-            progresso == 25.00
-            or progresso == 50.00
-            or progresso == 75.00
-            or progresso == 99.00
-        ):
-            print(f"[+] Progresso: {progresso}%")
+        for ponto in [10, 25, 50, 75, 99]:
+            if progresso >= ponto and not progresso_mostrado[ponto]:
+                print(f"\n==============Progresso: {ponto}%==============")
+                progresso_mostrado[ponto] = True
+                break

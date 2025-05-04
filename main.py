@@ -15,18 +15,23 @@ while True:
 
     opcao = input("Escolha uma opção: ")
 
-    if opcao == "1":
-        whois_lookup()
-    elif opcao == "2":
-        subdom_scanner()
-    elif opcao == "3":
-        dns_enum()
-    elif opcao == "4":
-        waf_identifier()
-    elif opcao == "5":
-        portscanner()
-    elif opcao == "0":
-        print("Saindo...")
-        break
-    else:
-        print("Opção inválida. Tente novamente.")
+    try:
+        if opcao == "1":
+            whois_lookup()
+        elif opcao == "2":
+            subdom_scanner()
+        elif opcao == "3":
+            dns_enum()
+        elif opcao == "4":
+            waf_identifier()
+        elif opcao == "5":
+            portscanner()
+        elif opcao == "0":
+            print("Saindo...")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+    except Exception as e:
+        print(f"\n[!] Ocorreu um erro inesperado ao executar a ferramenta: {e}")
+        print("[!] Retornando ao menu...")

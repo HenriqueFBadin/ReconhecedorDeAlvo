@@ -12,14 +12,20 @@ def waf_identifier():
             print("Por favor, inclua 'http://' ou 'https://' no início da URL.")
 
     print(
-        f"\n===================== Buscando o WAF de {target_domain} =====================\n"
+        f"\n===================== Buscando o WAF de {target_domain} ====================="
     )
 
     waf_detector = WAFW00F(target=target_domain)
 
+    waf_detected = waf_detector.identwaf()
+
     if waf_detector.knowledge.get("wafname"):
-        print(f"\nWAF detected: {waf_detector.knowledge['wafname']}")
+        if type(waf_detector.knowledge["wafname"]) == list:
+            for waf in waf_detector.knowledge["wafname"]:
+                print(f"\nWAF detectado: {waf}")
+        else:
+            print(f"\nWAF detectado: {waf_detector.knowledge['wafname']}")
+
     else:
-        print("\nA identificação do WAF falhou, tentando uma identificação genérica\n")
-        waf_detector.genericdetect()
+        print("\nA identificação do WAF falhou")
         print("\nNenhum WAF detectado.")
