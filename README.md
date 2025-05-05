@@ -9,6 +9,7 @@ Este utilitário CLI reúne várias ferramentas de reconhecimento, facilitando a
 Aqui tem um vídeo demonstrando o funcionamento do projeto. Para acessá-lo, clique na imagem:
 
 [![Demonstração do Projeto](https://img.youtube.com/vi/RseDHVaX5lw/0.jpg)](https://www.youtube.com/watch?v=RseDHVaX5lw)
+
 [Assista à demonstração do projeto](https://youtu.be/RseDHVaX5lw)
 
 ## Requisitos do Sistema
