@@ -25,12 +25,14 @@ pip install python-whois
 pip install wafw00f
 ```
 
-## 4. Ferramentas Utilizadas
+## 4. Ferramentas Utilizadas, Tecnologias e Conceitos Aplicados
 
-- dnspython
-- python-whois
-- wafw00f
-- socket (nativa do Python)
+- **WHOIS Lookup**: Recupera informações públicas do registro de domínios, como dados do titular, datas e servidores.
+- **Enumeração de Subdomínios**: Técnica de brute-force usando dicionários para descobrir subdomínios válidos.
+- **DNS Enumerator**: Varredura por registros DNS (A, AAAA, MX, SOA, TXT etc.), útil para mapear a infraestrutura do alvo.
+- **WAF Identifier**: Detecta se há Web Application Firewall ativo, baseado em respostas alteradas por payloads suspeitos.
+- **Port Scanner**: Scanner simples de portas TCP, para verificar quais serviços estão disponíveis em um host.  
+  O portscanner foi desenvolvido no Roteiro 1. Para mais informações, acesse: [https://github.com/HenriqueFBadin/TecHackPortScanner.git](https://github.com/HenriqueFBadin/TecHackPortScanner.git)
 
 ## 5. Como usar
 
