@@ -162,7 +162,6 @@ def preparar_whois(info):
 def whois_lookup():
     domain = input("Informe qual o domínio que deseja analisar: ")
     whois_info = whois.whois(domain)
-    print(whois_info)
     dados = preparar_whois(whois_info)
 
     print(f"domínio:       {dados['dominio']}")

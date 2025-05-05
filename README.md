@@ -6,6 +6,11 @@ Projeto de um scanner de reconhecimento de alvo em Python que integra múltiplas
 
 Este utilitário CLI reúne várias ferramentas de reconhecimento, facilitando a análise inicial de alvos web em um só lugar. O objetivo é apoiar práticas de análise e segurança ofensiva, como parte do processo de footprinting em testes de invasão, utilizando técnicas de coleta passiva e ativa.
 
+Aqui tem um vídeo demonstrando o funcionamento do projeto. Para acessá-lo, clique na imagem:
+
+[![Demonstração do Projeto](https://img.youtube.com/vi/RseDHVaX5lw/0.jpg)](https://www.youtube.com/watch?v=RseDHVaX5lw)
+[Assista à demonstração do projeto](https://youtu.be/RseDHVaX5lw)
+
 ## Requisitos do Sistema
 
 - Python 3.10 ou superior
